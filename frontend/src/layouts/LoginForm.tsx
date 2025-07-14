@@ -73,7 +73,7 @@ export function LoginForm({
                   </div>
                   <Input id="password" type="password" required className="focus:ring-indigo-600" />
                 </div>
-                <Button type="submit" className="w-full bg-gradient-to-r from-blue-600 to-indigo-600">
+                <Button type="submit" variant={"default"} className="w-full">
                   Login
                 </Button>
               </div>
