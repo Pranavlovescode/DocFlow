@@ -18,4 +18,6 @@ public interface DocsRepo extends MongoRepository<DocumentVersion, String> {
     List<DocumentVersion> findAllByName(String name);
 
     List<DocumentVersion> findByNameContaining(String name);
+
+    List<DocumentVersion> findAllByUploadedBy_email(String email);
 }

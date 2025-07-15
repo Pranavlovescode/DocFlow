@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "@/layouts/Navbar";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -27,61 +27,87 @@ import {
   FolderOpen,
   MoreVertical,
   Star,
-  Share2
+  Share2,
 } from "lucide-react";
+import { Document } from "@/utils/api/document";
 
-// Enhanced dummy data
-const documents = [
-  {
-    id: "doc1",
-    name: "Project Proposal.pdf",
-    versions: 3,
-    updatedAt: "2025-07-10",
-    size: "2.4 MB",
-    type: "pdf",
-    tags: ["proposal", "project"],
-    isStarred: true,
-  },
-  {
-    id: "doc2",
-    name: "Design_Doc_V1.docx",
-    versions: 5,
-    updatedAt: "2025-07-13",
-    size: "1.8 MB",
-    type: "docx",
-    tags: ["design", "documentation"],
-    isStarred: false,
-  },
-  {
-    id: "doc3",
-    name: "Meeting_Notes.txt",
-    versions: 2,
-    updatedAt: "2025-07-12",
-    size: "45 KB",
-    type: "txt",
-    tags: ["meeting", "notes"],
-    isStarred: true,
-  },
-  {
-    id: "doc4",
-    name: "Technical_Specifications.pdf",
-    versions: 7,
-    updatedAt: "2025-07-11",
-    size: "3.2 MB",
-    type: "pdf",
-    tags: ["technical", "specs"],
-    isStarred: false,
-  },
-];
+
+interface Document{
+  id: string;
+  name: string;
+  version: number;
+  fileId: string;
+  uploadedAt: string;
+  size:number;
+  contentType:string;
+  tags:string[];
+};
 
 const Dashboard: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("all");
+  const [documents, setDocuments] = useState<Document[]>([
+    {
+      id: "doc1",
+      name: "Project Proposal.pdf",
+      version: 3,
+      uploadedAt: "2025-07-10",
+      size: 2.4,
+      contentType: "pdf",
+      tags: ["proposal", "project"],
+      fileId:"random"
+    },
+    {
+      id: "doc2",
+      name: "Design_Doc_V1.docx",
+      version: 5,
+      uploadedAt: "2025-07-13",
+      size: 1.8,
+      contentType: "docx",
+      tags: ["design", "documentation"],
+      fileId: "random2",
+    },
+    {
+      id: "doc3",
+      name: "Meeting_Notes.txt",
+      version: 2,
+      uploadedAt: "2025-07-12",
+      size: 45,
+      contentType: "txt",
+      tags: ["meeting", "notes"],
+      fileId: "random3",
+    },
+    {
+      id: "doc4",
+      name: "Technical_Specifications.pdf",
+      version: 7,
+      uploadedAt: "2025-07-11",
+      size:3.2,
+      contentType: "pdf",
+      tags: ["technical", "specs"],
+      fileId: "random4",
+    },
+  ]);
 
-  const filteredDocuments = documents.filter(doc =>
-    doc.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-    (selectedFilter === "all"  ||
-     (selectedFilter === "recent" && new Date(doc.updatedAt).getTime() > Date.now() - 7 * 24 * 60 * 60 * 1000))
+  const latestDocuments: Document[] = Array.from(
+    documents.reduce((map: Map<string, Document>, doc: Document) => {
+      const existing = map.get(doc.name);
+      if (!existing || new Date(doc.uploadedAt) > new Date(existing.uploadedAt)) {
+        map.set(doc.name, doc); // keep the newer one
+      }
+      return map;
+    }, new Map<string, Document>())
+  ).map(([, doc]) => doc);
+
+
+
+  const filteredDocuments = latestDocuments.filter(
+    (doc) =>
+      doc.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (selectedFilter === "all" ||
+        (selectedFilter === "recent" &&
+          new Date(doc.uploadedAt).getTime() >
+          Date.now() - 7 * 24 * 60 * 60 * 1000))
   );
 
   const getFileIcon = () => {
@@ -90,12 +116,21 @@ const Dashboard: React.FC = () => {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric',
-      year: 'numeric'
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
     });
   };
+
+  useEffect(() => {
+    const fetchDocuments = async () => {
+      const response = await Document.getAllUserDocument("pranavtitambe04@gmail.com");
+      console.log("documents ", response)
+      setDocuments(response);
+    };
+    fetchDocuments();
+  }, []);
 
   return (
     <>
@@ -110,8 +145,9 @@ const Dashboard: React.FC = () => {
                   Document Dashboard
                 </h1>
                 <p className="text-xl text-blue-600 max-w-2xl">
-                  Manage, version, and collaborate on your documents with ease. 
-                  Keep track of all your important files in one centralized location.
+                  Manage, version, and collaborate on your documents with ease.
+                  Keep track of all your important files in one centralized
+                  location.
                 </p>
                 <div className="flex items-center gap-6 text-blue-600">
                   <div className="flex items-center gap-2">
@@ -120,7 +156,7 @@ const Dashboard: React.FC = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <Database className="h-5 w-5" />
-                    <span>4 documents</span>
+                    <span>{latestDocuments.length} documents</span>
                   </div>
                 </div>
               </div>
@@ -138,15 +174,14 @@ const Dashboard: React.FC = () => {
               </CardTitle>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/upload-doc">
-                  <Button 
-                    size="lg" 
+                  <Button
+                    size="lg"
                     className="bg-white text-blue-600 hover:bg-blue-50 font-semibold shadow-lg"
                   >
                     <Upload className="h-5 w-5 mr-2" />
                     Upload New Document
                   </Button>
                 </Link>
-                
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -162,16 +197,18 @@ const Dashboard: React.FC = () => {
                 </div>
                 <div className="flex gap-2">
                   <Button
-                    variant={selectedFilter === "all"? "default":"outline"}
+                    variant={selectedFilter === "all" ? "default" : "outline"}
                     onClick={() => setSelectedFilter("all")}
                     className="flex items-center gap-2 "
                   >
                     <Filter className="h-4 w-4" />
                     All
                   </Button>
-                
+
                   <Button
-                    variant={selectedFilter === "recent" ? "default" : "outline"}
+                    variant={
+                      selectedFilter === "recent" ? "default" : "outline"
+                    }
                     onClick={() => setSelectedFilter("recent")}
                     className="flex items-center gap-2"
                   >
@@ -189,45 +226,62 @@ const Dashboard: React.FC = () => {
                   </TableCaption>
                   <TableHeader>
                     <TableRow className="border-b border-gray-200">
-                      <TableHead className="font-semibold text-gray-700">Document</TableHead>
-                      <TableHead className="font-semibold text-gray-700">Size</TableHead>
-                      <TableHead className="font-semibold text-gray-700">Versions</TableHead>
-                      <TableHead className="font-semibold text-gray-700">Last Updated</TableHead>
-                      <TableHead className="font-semibold text-gray-700">Tags</TableHead>
-                      <TableHead className="text-right font-semibold text-gray-700">Actions</TableHead>
+                      <TableHead className="font-semibold text-gray-700">
+                        Document
+                      </TableHead>
+                      <TableHead className="font-semibold text-gray-700">
+                        Size
+                      </TableHead>
+                      <TableHead className="font-semibold text-gray-700">
+                        Versions
+                      </TableHead>
+                      <TableHead className="font-semibold text-gray-700">
+                        Last Updated
+                      </TableHead>
+                      <TableHead className="font-semibold text-gray-700">
+                        Tags
+                      </TableHead>
+                      <TableHead className="text-right font-semibold text-gray-700">
+                        Actions
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filteredDocuments.map((doc) => (
-                      <TableRow 
-                        key={doc.id} 
+                      <TableRow
+                        key={doc.id}
                         className="hover:bg-gray-50 transition-colors duration-150"
                       >
                         <TableCell className="py-4">
                           <div className="flex items-center gap-3">
                             {getFileIcon()}
                             <div className="flex flex-col">
-                              <span className="font-medium text-gray-800">{doc.name}</span>
-                              <span className="text-sm text-gray-500">{doc.type.toUpperCase()}</span>
+                              <span className="font-medium text-gray-800">
+                                {doc.name}
+                              </span>
+                              <span className="text-sm text-gray-500">
+                                {(doc.contentType?.split("/")[1] ?? "unknown").toUpperCase()}
+                              </span>
                             </div>
-                          
                           </div>
                         </TableCell>
-                        <TableCell className="text-gray-600">{doc.size}</TableCell>
+                        <TableCell className="text-gray-600">
+                          {(doc.size as unknown as number) / 1000}
+                        </TableCell>
                         <TableCell>
                           <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm font-medium">
-                            {doc.versions} versions
+                            {doc.version} versions
                           </span>
                         </TableCell>
                         <TableCell className="text-gray-600">
                           <div className="flex items-center gap-2">
                             <Calendar className="h-4 w-4 text-gray-400" />
-                            {formatDate(doc.updatedAt)}
+                            {formatDate(doc.uploadedAt)}
                           </div>
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-wrap gap-1">
-                            {doc.tags.map((tag, index) => (
+                            {doc.tags && doc.tags.map((tag: string, index: number) => (
                               <span
                                 key={index}
                                 className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs"
@@ -240,7 +294,11 @@ const Dashboard: React.FC = () => {
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-2">
                             <Link to={`/doc/${doc.id}/versions`}>
-                              <Button size="sm" variant="outline" className="h-8">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-8"
+                              >
                                 <Eye className="h-4 w-4 mr-1" />
                                 View
                               </Button>
@@ -253,7 +311,11 @@ const Dashboard: React.FC = () => {
                               <Share2 className="h-4 w-4 mr-1" />
                               Share
                             </Button>
-                            <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-8 w-8 p-0"
+                            >
                               <MoreVertical className="h-4 w-4" />
                             </Button>
                           </div>
