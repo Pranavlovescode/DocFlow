@@ -293,7 +293,7 @@ const Dashboard: React.FC = () => {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-2">
-                            <Link to={`/doc/${doc.id}/versions`}>
+                            <Link to={`/doc/${doc.name}/versions`}>
                               <Button
                                 size="sm"
                                 variant="outline"

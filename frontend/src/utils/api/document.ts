@@ -16,4 +16,19 @@ export const Document = {
       throw error
     }
   },
+  getAllVersionOfDocument:async(name:string | undefined)=>{
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_URL}/api/docs/${name}/versions`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          }
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw error
+    }
+  }
 };

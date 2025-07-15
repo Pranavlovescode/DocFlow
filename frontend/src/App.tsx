@@ -4,6 +4,7 @@ import Home from './pages/Home'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import UploadDoc from './pages/UploadDocs'
+import DocumentVersions from './pages/DocumentVersions'
 
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
         <Route path='/login' element={<Login/>}/>
         <Route path='/dashboard' element={<Dashboard/>}/>
         <Route path='/upload-doc' element={<UploadDoc/>} />
+        <Route path='/doc/:docName/versions' element={<DocumentVersions/>} />
       </Routes>
     </>
   )
