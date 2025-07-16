@@ -27,7 +27,7 @@ public class DocsServices {
         this.userRepo = userRepo;
     }
 
-    public String uploadDocs(MultipartFile file, String uploadedBy) throws IOException {
+    public String uploadDocs(MultipartFile file, String uploadedBy, String description, List<String> tags) throws IOException {
 
         User user = userRepo.findByEmail(uploadedBy);
 
@@ -50,6 +50,8 @@ public class DocsServices {
         doc.setUploadedBy(user);
         doc.setSize(file.getSize());
         doc.setContentType(file.getContentType());
+        doc.setDescription(description);
+        doc.setTags(tags);
 
         docsRepo.save(doc);
         return "File uploaded successfully with version " + newVersion;

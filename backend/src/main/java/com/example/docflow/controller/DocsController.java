@@ -39,9 +39,11 @@ public class DocsController {
 
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file,
-                                             @RequestParam("uploadedBy") String uploadedBy) throws IOException {
+                                             @RequestParam("uploadedBy") String uploadedBy,
+                                             @RequestParam("description") String description,
+                                             @RequestParam("tags") List<String> tags ) throws IOException {
 
-        return ResponseEntity.ok(docsServices.uploadDocs(file,uploadedBy));
+        return ResponseEntity.ok(docsServices.uploadDocs(file,uploadedBy,description, tags));
     }
     @GetMapping("/{name}")
     public ResponseEntity<?> getLatestFile(@PathVariable String name, HttpServletResponse response) throws IOException {

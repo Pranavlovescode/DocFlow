@@ -260,7 +260,7 @@ const Dashboard: React.FC = () => {
                                 {doc.name}
                               </span>
                               <span className="text-sm text-gray-500">
-                                {(doc.contentType?.split("/")[1] ?? "unknown").toUpperCase()}
+                                {(doc.name?.split(".")[1] ?? "unknown").toUpperCase()}
                               </span>
                             </div>
                           </div>

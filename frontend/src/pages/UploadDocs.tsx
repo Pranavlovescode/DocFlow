@@ -55,8 +55,8 @@ export default function UploadDoc() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!file || !title) {
-      alert("Please select a file and enter a title.");
+    if (!file) {
+      alert("Please select a file and enter.");
       return;
     }
 
@@ -66,11 +66,12 @@ export default function UploadDoc() {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("title", title);
-    formData.append("notes", notes);
+    formData.append("description", notes);
     formData.append("tags", tags);
+    formData.append("uploadedBy","pranavtitambe04@gmail.com")
 
     try {
-      await fetch("http://localhost:8080/api/upload", {
+      await fetch(`${import.meta.env.VITE_URL}/api/docs/upload`, {
         method: "POST",
         body: formData,
       });
@@ -128,7 +129,7 @@ export default function UploadDoc() {
             <CardContent className="space-y-8">
               <form onSubmit={handleSubmit} className="space-y-8">
                 {/* Title */}
-                <div className="space-y-3">
+                {/* <div className="space-y-3">
                   <Label htmlFor="title" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
                     <FileText className="h-4 w-4" />
                     Document Title
@@ -141,7 +142,7 @@ export default function UploadDoc() {
                     required
                     className="h-12 text-lg border-2 focus:border-blue-500 transition-colors"
                   />
-                </div>
+                </div> */}
 
                 {/* File Upload Area */}
                 <div className="space-y-3">
@@ -257,7 +258,7 @@ export default function UploadDoc() {
                 <div className="pt-6">
                   <Button
                     type="submit"
-                    disabled={isLoading || !file || !title}
+                    disabled={isLoading || !file}
                     className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50"
                   >
                     {isLoading ? (
