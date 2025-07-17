@@ -9,9 +9,12 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.example.docflow.config.errorHandling.CustomAuthenticationEntryPoint;
 
 @Configuration
 @EnableWebSecurity
@@ -20,14 +23,16 @@ public class SecurityConfig{
     @Autowired
     private DocFlowUserDetailService docFlowUserDetailService;
     @Autowired
-    private JwtConfig jwtconfig;
+    private JWTfilter jwtfilter;
+    @Autowired
+    private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JWTfilter jWTfilter) throws Exception{
         http.authorizeHttpRequests(authorizeRequest-> authorizeRequest
-        .requestMatchers("/api/create/user","/api/user/login").permitAll()
+        .requestMatchers("/api/user/create","/api/user/login","/api/new-password/**","/actuator").permitAll()
         .anyRequest().authenticated())
-        .addFilterBefore(jWTfilter, UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(jwtfilter, UsernamePasswordAuthenticationFilter.class)
         .csrf(csrfCustomizer -> csrfCustomizer.disable())
         .cors(corsCustomizer -> {
                     corsCustomizer.configurationSource(request -> {
@@ -39,7 +44,9 @@ public class SecurityConfig{
                         return cors;
                     });
             })
-        .httpBasic(org.springframework.security.config.Customizer.withDefaults());
+        .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .exceptionHandling(exceptions-> exceptions
+        .authenticationEntryPoint(customAuthenticationEntryPoint));
         return http.build();
     }
 
@@ -52,8 +59,10 @@ public class SecurityConfig{
         return authenticationProvider;
     }
 
+    // This below bean will actually help us in authenticating the user using authentication provider.
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception{
         return authConfig.getAuthenticationManager();
     }
+    
 }

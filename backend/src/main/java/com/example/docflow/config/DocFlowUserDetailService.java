@@ -11,7 +11,7 @@ import com.example.docflow.entity.UserPrinciple;
 import com.example.docflow.repo.UserRepo;
 
 @Service
-public class DocFlowUserDetailService implements UserDetailsService{
+public class DocFlowUserDetailService implements UserDetailsService {
 
     @Autowired
     UserRepo userRepo;
@@ -22,7 +22,9 @@ public class DocFlowUserDetailService implements UserDetailsService{
         if (user == null) {
             throw new UsernameNotFoundException("The email entered is not found");
         }
-        else return new UserPrinciple(user);
+        System.out.println("Fetched user: " + user.getEmail());
+        System.out.println("Stored (hashed) password: " + user.getPassword());
+        return new UserPrinciple(user);
     }
-    
+
 }
