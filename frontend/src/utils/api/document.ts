@@ -8,6 +8,7 @@ export const Document = {
         {
           headers: {
             "Content-Type": "application/json",
+            "Authorization":`Bearer ${JSON.parse(localStorage.getItem("userData") || '{}')?.token}`
           }
         }
       );
@@ -23,6 +24,7 @@ export const Document = {
         {
           headers: {
             "Content-Type": "application/json",
+            "Authorization":`Bearer ${JSON.parse(localStorage.getItem("userData") || '{}')?.token}`
           }
         }
       );

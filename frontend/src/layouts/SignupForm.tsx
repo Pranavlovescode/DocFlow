@@ -9,9 +9,10 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useState } from "react";
 import { UserApi } from "@/utils/api/user";
+import { toast } from "sonner";
 
 interface FormData {
   name: string;
@@ -31,6 +32,8 @@ export function SignupForm({
     confirmPassword: "",
   });
 
+  const navigate = useNavigate();
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     setFormData((prev) => ({
@@ -45,6 +48,14 @@ export function SignupForm({
     console.log("Signup form submitted:", formData);
     const response = await UserApi.createUser(formData);
     console.log(response)
+    setFormData({
+      email:"",
+      password:"",
+      name:"",
+      confirmPassword:""
+    })
+    toast("Signup successfull")
+    navigate('/login');
   };
 
   return (

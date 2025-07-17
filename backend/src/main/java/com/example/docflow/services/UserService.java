@@ -1,9 +1,13 @@
 package com.example.docflow.services;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,15 +34,28 @@ public class UserService {
         return userRepo.save(user);
     }
 
-    public String loginUser(User user) {
-        System.out.println(user.getEmail());
-        System.out.println(user.getPassword());
-        Authentication auth = authManager
-                .authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
-        System.out.println("Authentication obj " + auth);
-        if (auth.isAuthenticated())
-            return jwt.generateToken(user.getEmail());
-        return "Email or Password Invalid";
+    public Map<String, String> loginUser(User user) {
+        Map<String, String> result = new HashMap<>();
+        try {
+            System.out.println(user.getEmail());
+            System.out.println(user.getPassword());
+
+            Authentication auth = authManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
+
+            System.out.println("Authentication obj " + auth);
+            if (auth.isAuthenticated()) {
+                result.put("email",user.getEmail());
+                result.put("token", jwt.generateToken(user.getEmail()));
+                return result;
+            }
+            result.put("error", "Authentication failed");
+            return result;
+        } catch (AuthenticationException ex) {
+            ex.printStackTrace(); // This will tell you what failed
+            result.put("error", "Invalid email or password: " + ex.getMessage());
+            return result;
+        }
     }
 
     public String updatePassword(User user) {
@@ -50,7 +67,7 @@ public class UserService {
             return "No user found with " + user.getEmail() + " email";
         existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepo.save(existingUser);
-        System.out.println("Stored password "+ existingUser.getPassword());
+        System.out.println("Stored password " + existingUser.getPassword());
         return "New password set successfully";
     }
 }

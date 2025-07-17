@@ -1,8 +1,21 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router";
+import { UserApi } from "@/utils/api/user";
+import { Link, useNavigate } from "react-router";
+import { toast } from "sonner";
 
 export default function Navbar() {
+  
+  const userData = localStorage.getItem("userData");
+  const token: string | null = userData ? JSON.parse(userData).token : null;
+  const navigate = useNavigate();
+
+  const handleLogout=async()=>{
+    const response = await UserApi.logoutUser();
+    toast("Logout successful");
+    navigate('/login');
+  }
+
   return (
     <>
       <nav className="fixed top-0 w-full bg-white/20 backdrop-blur-md border-b border-gray-200 z-50">
@@ -19,19 +32,25 @@ export default function Navbar() {
 
             {/* Right side buttons */}
             <div className="flex items-center space-x-4">
-              <Link to={"/login"}>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="hidden sm:inline-flex"
-                >
-                  Sign In
-                </Button>
-              </Link>
-              <Avatar className="h-8 w-8">
-                <AvatarImage src="https://github.com/shadcn.png" />
-                <AvatarFallback>U</AvatarFallback>
-              </Avatar>
+              {!token ? (
+                <Link to={"/login"}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="hidden sm:inline-flex"
+                  >
+                    Sign In
+                  </Button>
+                </Link>
+              ) : (
+                <>
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src="https://github.com/shadcn.png" />
+                    <AvatarFallback>U</AvatarFallback>
+                  </Avatar>
+                  <Button onClick={handleLogout} variant={"default"}>Logout</Button>
+                </>
+              )}
             </div>
           </div>
         </div>

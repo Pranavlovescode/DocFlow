@@ -9,12 +9,41 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Link } from "react-router"
+import { Link, useNavigate } from "react-router"
+import { useState } from "react"
+import { UserApi } from "@/utils/api/user"
+import { toast } from "sonner"
 
+
+interface FormData{
+  email:string;
+  password:string;
+}
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+
+  const navigate = useNavigate();
+  const[formData,setFormData] = useState<FormData>({
+    email:"",
+    password:""
+  });
+
+  const handleLoginForm=async(e:React.FormEvent)=>{
+    e.preventDefault(); //preventing from reloading the page when submitted
+    const data = await UserApi.loginUser(formData);
+    console.log("received userData ",data);
+    
+    localStorage.setItem("userData",JSON.stringify(data))
+    toast("Login successfull")
+    setFormData({
+      email:"",
+      password:""
+    })
+    navigate('/dashboard');
+  }
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="bg-white border-gray-100">
@@ -25,7 +54,7 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={handleLoginForm}>
             <div className="grid gap-6">
               <div className="flex flex-col gap-4">
                 <Button variant="outline" className="w-full">
@@ -56,6 +85,7 @@ export function LoginForm({
                 <div className="grid gap-3">
                   <Label htmlFor="email">Email</Label>
                   <Input
+                    onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
                     id="email"
                     type="email"
                     placeholder="m@example.com"
@@ -72,7 +102,9 @@ export function LoginForm({
                       Forgot your password?
                     </a>
                   </div>
-                  <Input id="password" type="password" required className="focus:ring-indigo-600" />
+                  <Input id="password" type="password" required 
+                  onChange={(e)=>setFormData((prev)=>({...prev,password:e.target.value}))}
+                  className="focus:ring-indigo-600" />
                 </div>
                 <Button type="submit" variant={"default"} className="w-full">
                   Login
