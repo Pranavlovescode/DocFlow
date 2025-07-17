@@ -5,14 +5,15 @@ import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
 
 export default function Navbar() {
-  
+
   const userData = localStorage.getItem("userData");
   const token: string | null = userData ? JSON.parse(userData).token : null;
   const navigate = useNavigate();
 
   const handleLogout=async()=>{
-    const response = await UserApi.logoutUser();
+    // const response = await UserApi.logoutUser();
     toast("Logout successful");
+    localStorage.removeItem("userData");
     navigate('/login');
   }
 

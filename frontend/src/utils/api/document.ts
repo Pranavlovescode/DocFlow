@@ -39,6 +39,10 @@ export const Document = {
         `${import.meta.env.VITE_URL}/api/docs/${name}/v/${version}`,
         {
           responseType: 'blob', // Important: Handle binary data
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization":`Bearer ${JSON.parse(localStorage.getItem("userData") || '{}')?.token}`
+          }
         }
       );
       
