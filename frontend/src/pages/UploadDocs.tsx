@@ -17,6 +17,7 @@ import {
   Tag
 } from "lucide-react";
 
+
 export default function UploadDoc() {
   const [file, setFile] = useState<File | null>(null);
   const [title, setTitle] = useState("");
@@ -71,12 +72,23 @@ export default function UploadDoc() {
     formData.append("uploadedBy","pranavtitambe04@gmail.com")
 
     try {
-      await fetch(`${import.meta.env.VITE_URL}/api/docs/upload`, {
+      const response = await fetch(`${import.meta.env.VITE_URL}/api/docs/upload`, {
         method: "POST",
         body: formData,
+        headers:{
+          // 'Content-Type': 'multipart/form-data', // Let browser set it including boundary
+          "Authorization": `Bearer ${JSON.parse(localStorage.getItem("userData") as string).token}`
+        }
       });
-
-      navigate("/dashboard");
+      if (response.ok) {
+        alert("File uploaded successfully!");
+        navigate("/dashboard");
+      }
+      else{
+        console.error("Upload failed", response.statusText);
+        throw new Error("Network response was not ok");
+      }
+      
     } catch (error) {
       console.error("Upload failed", error);
       alert("Upload failed. Please try again.");
