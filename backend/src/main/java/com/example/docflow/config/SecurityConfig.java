@@ -30,7 +30,7 @@ public class SecurityConfig{
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JWTfilter jWTfilter) throws Exception{
         http.authorizeHttpRequests(authorizeRequest-> authorizeRequest
-        .requestMatchers("/api/user/create","/api/user/login","/api/new-password/**","/actuator").permitAll()
+        .requestMatchers("/api/user/create","/api/user/login","/api/new-password/**","/actuator/**").permitAll()
         .anyRequest().authenticated())
         .addFilterBefore(jwtfilter, UsernamePasswordAuthenticationFilter.class)
         .csrf(csrfCustomizer -> csrfCustomizer.disable())

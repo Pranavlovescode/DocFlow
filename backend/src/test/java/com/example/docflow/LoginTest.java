@@ -7,8 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -19,18 +18,37 @@ public class LoginTest {
 
     @Test
     void shouldLoginWithValidCredentials() throws Exception {
-        String json = """
+
+        // Signup first
+        String signupJson = """
             {
-                "username": "pranavtitambe04@gmail.com",
-                "password": "pranav"
+                "email": "newuser@gmail.com",
+                "password": "secret123",
+                "name": "New User"
             }
-            """;
+        """;
+
+        mockMvc.perform(post("/api/user/create")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(signupJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("newuser@gmail.com"))
+                .andExpect(jsonPath("$.name").value("New User"));
+
+        // Attempt login
+        String loginJson = """
+            {
+                "email": "newuser@gmail.com",
+                "password": "secret123"
+            }
+        """;
 
         mockMvc.perform(post("/api/user/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
-            .andExpect(status().isOk())
-            .andExpect(content().string("Login successful"));
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(loginJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("newuser@gmail.com"));
     }
+
 }
 

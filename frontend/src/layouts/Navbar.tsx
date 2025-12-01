@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { UserApi } from "@/utils/api/user";
+// import { UserApi } from "@/utils/api/user";
 import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
 

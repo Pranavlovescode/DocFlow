@@ -20,7 +20,7 @@ import {
 
 export default function UploadDoc() {
   const [file, setFile] = useState<File | null>(null);
-  const [title, setTitle] = useState("");
+  // const [title, setTitle] = useState("");
   const [notes, setNotes] = useState("");
   const [tags, setTags] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -66,7 +66,7 @@ export default function UploadDoc() {
     // Prepare FormData for backend upload
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("title", title);
+    // formData.append("title", title);
     formData.append("description", notes);
     formData.append("tags", tags);
     formData.append("uploadedBy","pranavtitambe04@gmail.com")

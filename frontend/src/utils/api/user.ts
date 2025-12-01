@@ -7,10 +7,10 @@ interface FormData {
   confirmPassword: string;
 }
 
-interface userData{
-  email:string;
-  token:string|null;
-}
+// interface userData{
+//   email:string;
+//   token:string|null;
+// }
 
 interface LoginFormData {
   email: string;

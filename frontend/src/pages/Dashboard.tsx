@@ -22,11 +22,8 @@ import {
   Filter,
   Calendar,
   Database,
-  TrendingUp,
   Clock,
-  FolderOpen,
   MoreVertical,
-  Star,
   Share2,
 } from "lucide-react";
 import { Document } from "@/utils/api/document";
