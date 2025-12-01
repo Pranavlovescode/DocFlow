@@ -1,5 +1,7 @@
 package com.example.docflow.config;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,10 +39,11 @@ public class SecurityConfig{
         .cors(corsCustomizer -> {
                     corsCustomizer.configurationSource(request -> {
                         var cors = new org.springframework.web.cors.CorsConfiguration();
-                        cors.setAllowedOrigins(java.util.List.of("http://localhost:5173","https://docflow.pranavtitambe.in"));
+                        cors.setAllowedOriginPatterns(java.util.List.of("http://localhost:5173","https://docflow.pranavtitambe.in"));
                         cors.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE","OPTIONS"));
-                        cors.setAllowCredentials(true);
+                        cors.setExposedHeaders(List.of("*"));
                         cors.setAllowedHeaders(java.util.List.of("*"));
+                        cors.setAllowCredentials(true);
                         return cors;
                     });
             })
