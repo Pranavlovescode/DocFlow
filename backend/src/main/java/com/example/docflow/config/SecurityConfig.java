@@ -30,15 +30,15 @@ public class SecurityConfig{
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JWTfilter jWTfilter) throws Exception{
         http.authorizeHttpRequests(authorizeRequest-> authorizeRequest
-        .requestMatchers("/api/user/create","/api/user/login","/api/new-password/**","/actuator/**").permitAll()
+        .requestMatchers("/api/auth/create","/api/auth/login","/api/new-password/**","/actuator/**").permitAll()
         .anyRequest().authenticated())
         .addFilterBefore(jwtfilter, UsernamePasswordAuthenticationFilter.class)
         .csrf(csrfCustomizer -> csrfCustomizer.disable())
         .cors(corsCustomizer -> {
                     corsCustomizer.configurationSource(request -> {
                         var cors = new org.springframework.web.cors.CorsConfiguration();
-                        cors.setAllowedOrigins(java.util.List.of("http://localhost:5173"));
-                        cors.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE"));
+                        cors.setAllowedOrigins(java.util.List.of("http://localhost:5173","https://docflow.pranavtitambe.in"));
+                        cors.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE","OPTIONS"));
                         cors.setAllowCredentials(true);
                         cors.setAllowedHeaders(java.util.List.of("*"));
                         return cors;

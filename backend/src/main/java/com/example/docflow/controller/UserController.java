@@ -17,13 +17,13 @@ public class UserController {
     @Autowired
     UserService userService;
         
-    @PostMapping("/api/user/create")
+    @PostMapping("/api/auth/create")
     public ResponseEntity<?> createUser(@RequestBody User user) {
         
         return ResponseEntity.ok().body(userService.createUserService(user));
     }
     
-    @PostMapping("/api/user/login")
+    @PostMapping("/api/auth/login")
     public ResponseEntity<?> loginUser(@RequestBody User user){
         return ResponseEntity.ok().body(userService.loginUser(user));
     }
