@@ -21,7 +21,7 @@ export const UserApi = {
   createUser: async (formData: FormData | undefined) => {
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_URL}/api/user/create`,
+        `${import.meta.env.VITE_URL}/api/auth/create`,
         formData,
         {
           headers: {
@@ -37,7 +37,7 @@ export const UserApi = {
   loginUser: async (formData: LoginFormData | undefined) => {
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_URL}/api/user/login`,
+        `${import.meta.env.VITE_URL}/api/auth/login`,
         formData,
         {
           headers: {
